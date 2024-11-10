@@ -1,0 +1,95 @@
+<!-- reports.html -->
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<h1>Financial Reports</h1>
+<div class="chart-container">
+    <h3>Bar Chart: Monthly Financial Overview</h3>
+    <canvas id="barChart"></canvas>
+</div>
+<div class="chart-container mt-5">
+    <h3>Pie Chart: Distribution of Crypto Investments</h3>
+    <canvas id="pieChart"></canvas>
+</div>
+
+<script>
+    // Bar chart data
+    const barChartData = {
+        labels: {{ bar_chart_data['labels'] | tojson | safe }},
+        datasets: [{
+            label: 'Monthly Overview',
+            data: {{ bar_chart_data['values'] | tojson | safe }},
+            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    // Pie chart data
+    const pieChartData = {
+        labels: {{ pie_chart_data['labels'] | tojson | safe }},
+        datasets: [{
+            data: {{ pie_chart_data['values'] | tojson | safe }},
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+                'rgba(75, 192, 192, 0.6)',
+                'rgba(153, 102, 255, 0.6)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    // Initialize bar chart
+    const ctxBar = document.getElementById('barChart').getContext('2d');
+    new Chart(ctxBar, {
+        type: 'bar',
+        data: barChartData,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Amount ($)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Month'
+                    }
+                }
+            }
+        }
+    });
+
+    // Initialize pie chart
+    const ctxPie = document.getElementById('pieChart').getContext('2d');
+    new Chart(ctxPie, {
+        type: 'pie',
+        data: pieChartData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Crypto Investment Distribution'
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
