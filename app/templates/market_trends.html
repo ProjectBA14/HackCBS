@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Market Trends{% endblock %}
+
+{% block content %}
+    <h1>Market Trends</h1>
+    <div id="trend-container"></div>
+
+    <div class="qna-section">
+        <h2>Ask About Trends</h2>
+        <input type="text" id="question-input" placeholder="Type your question here...">
+        <button onclick="askQuestion()">Ask</button>
+        <p id="answer"></p>
+    </div>
+
+    <script>
+        async function fetchTrends() {
+            const response = await fetch('/api/trends');
+            const trends = await response.json();
+            const trendContainer = document.getElementById('trend-container');
+            trendContainer.innerHTML = trends.map(trend => `
+                <div class="trend-card">
+                    <h3>${trend.site}</h3>
+                    <p>Sales Growth: ${trend.sales_growth}%</p>
+                    <p>Popular Products: ${trend.popular_products.join(", ")}</p>
+                    <p>Customer Sentiment: ${trend.customer_sentiment}</p>
+                    <p>Region Interest: ${trend.region_interest}</p>
+                </div>
+            `).join('');
+        }
+
+        async function askQuestion() {
+            const question = document.getElementById('question-input').value;
+            const response = await fetch('/api/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question })
+            });
+            const answer = await response.json();
+            document.getElementById('answer').innerText = answer.response;
+        }
+
+        window.onload = fetchTrends;
+    </script>
+{% endblock %}
